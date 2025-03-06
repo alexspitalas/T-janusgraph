@@ -16,6 +16,7 @@ package org.janusgraph.graphdb.database.management;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -378,6 +379,51 @@ public class ManagementSystem implements JanusGraphManagement {
             updateIndex(index, SchemaAction.REGISTER_INDEX);
         }
         return index;
+    }
+
+    @Override
+    public void buildLifetimeIndex() {
+        if (getGraphIndex("mixedIndexForLifetime") == null) {
+            String indexBackend = determineIndexBackend();
+            if (indexBackend != null) {
+                if (!containsPropertyKey("startTime")) {
+                    makePropertyKey("startTime").dataType(String.class).make();
+                }
+                if (!containsPropertyKey("endTime")) {
+                    makePropertyKey("endTime").dataType(String.class).make();
+                }
+                PropertyKey startTime = getPropertyKey("startTime");
+                PropertyKey endTime = getPropertyKey("endTime");
+                buildIndex("VertexIndexLifetime", Vertex.class).addKey(startTime).addKey(endTime).buildMixedIndex(indexBackend);
+                buildIndex("EdgeIndexLifetime", Edge.class).addKey(startTime).addKey(endTime).buildMixedIndex(indexBackend);
+                commit();
+                try {
+                    // Wait for the index to become available
+                    ManagementSystem.awaitGraphIndexStatus(graph, "VertexIndexLifetime").call();
+                    ManagementSystem.awaitGraphIndexStatus(graph, "EdgeIndexLifetime").call();
+                    // Reindex existing data
+                    updateIndex(getGraphIndex("VertexIndexLifetime"), SchemaAction.REINDEX).get();
+                    updateIndex(getGraphIndex("EdgeIndexLifetime"), SchemaAction.REINDEX).get();
+                    commit();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new JanusGraphException("Interrupted while waiting for index to become available", e);
+                } catch (Exception e) {
+                    throw new JanusGraphException("Error while reindexing data", e);
+                }
+            }
+        }
+    }
+
+    private String determineIndexBackend() {
+        Configuration config = graph.configuration();
+        if (config.containsKey("index.search.backend")) {
+            String backend = config.getString("index.search.backend");
+            if ("solr".equalsIgnoreCase(backend) || "elasticsearch".equalsIgnoreCase(backend)) {
+                return "search";
+            }
+        }
+        return null;
     }
 
     private static String composeRelationTypeIndexName(RelationType type, String name) {

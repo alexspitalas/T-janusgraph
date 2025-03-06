@@ -106,6 +106,16 @@ public interface JanusGraphManagement extends JanusGraphConfiguration, SchemaMan
     RelationTypeIndex buildPropertyIndex(PropertyKey key, String name, Order sortOrder, PropertyKey... sortKeys);
 
     /**
+     * Helper function that creates a mixed index for the 'lifetime' property if an index backend (Solr
+     * or Elasticsearch) is configured.
+     * This index will be used to improve query performance for lifetime-based searches.
+     *
+     * @return the created {@link JanusGraphIndex} if an index backend is available,
+     *         null otherwise
+     */
+    void buildLifetimeIndex();
+
+    /**
      * Whether a {@link RelationTypeIndex} with the given name has been defined for the provided {@link RelationType}
      *
      * @param type
