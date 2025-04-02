@@ -31,6 +31,7 @@ import org.janusgraph.graphdb.database.idassigner.placement.IDPlacementStrategy;
 import org.janusgraph.graphdb.database.idassigner.placement.PartitionAssignment;
 import org.janusgraph.graphdb.database.idassigner.placement.PartitionIDRange;
 import org.janusgraph.graphdb.database.idassigner.placement.SimpleBulkPlacementStrategy;
+import org.janusgraph.graphdb.database.idassigner.placement.TemporalPlacementStrategy;
 import org.janusgraph.graphdb.idmanagement.IDManager;
 import org.janusgraph.graphdb.internal.InternalElement;
 import org.janusgraph.graphdb.internal.InternalRelation;
@@ -70,8 +71,11 @@ public class VertexIDAssigner implements AutoCloseable {
     public static final ConfigOption<String> PLACEMENT_STRATEGY = new ConfigOption<>(IDS_NS, "placement",
             "Name of the vertex placement strategy or full class name", ConfigOption.Type.MASKABLE, "simple");
 
-    private static final Map<String,String> REGISTERED_PLACEMENT_STRATEGIES = Collections.singletonMap("simple", SimpleBulkPlacementStrategy.class.getName());
-
+    private static final Map<String,String> REGISTERED_PLACEMENT_STRATEGIES = new HashMap<>();
+    static {
+        REGISTERED_PLACEMENT_STRATEGIES.put("simple", SimpleBulkPlacementStrategy.class.getName());
+        REGISTERED_PLACEMENT_STRATEGIES.put("temporal", TemporalPlacementStrategy.class.getName());
+    }
     final ConcurrentMap<Integer,PartitionIDPool> idPools;
     final StandardIDPool schemaIdPool;
     final StandardIDPool partitionVertexIdPool;

@@ -129,6 +129,7 @@ public enum ReflectiveConfigOptionLoader {
             "org.janusgraph.diskstorage.log.kcvs.KCVSLogManager",
             "org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration",
             "org.janusgraph.graphdb.database.idassigner.placement.SimpleBulkPlacementStrategy",
+            "org.janusgraph.graphdb.database.idassigner.placement.TemporalPlacementStrategy",
             "org.janusgraph.graphdb.database.idassigner.VertexIDAssigner",
             "org.janusgraph.graphdb.query.index.ThresholdBasedIndexSelectionStrategy",
             //"org.janusgraph.graphdb.TestMockIndexProvider",
