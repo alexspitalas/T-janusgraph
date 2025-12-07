@@ -39,6 +39,69 @@ can support thousands of concurrent users, complex traversals, and analytic grap
 The [project homepage](https://janusgraph.org) contains more information on JanusGraph and
 provides links to documentation, getting-started guides and release downloads.
 
+## Temporal Features
+
+### What is Temporal JanusGraph?
+
+Temporal JanusGraph extends the JanusGraph graph database with temporal capabilities, enabling you to:
+
+- **Track temporal properties**: Associate timestamps with vertices, edges, and properties to capture data changes over time
+- **Query temporal data**: Execute time-based queries to retrieve graph states at specific points in time
+- **Analyze temporal patterns**: Understand how graph relationships and entity properties evolve
+- **Audit history**: Maintain a complete history of graph modifications for compliance and debugging
+
+This implementation builds upon Temporal TinkerPop Gremlin, providing a fully-integrated temporal graph query language and storage layer.
+
+### Getting Started with Temporal JanusGraph
+
+#### Prerequisites
+
+- Java 11 or higher
+- Maven 3.6 or higher
+- Git
+
+#### Installation and Setup
+
+Follow these steps to build and set up Temporal JanusGraph:
+
+##### 1. Clone and Build Temporal TinkerPop Gremlin
+
+First, you need to build the Temporal TinkerPop Gremlin library that Temporal JanusGraph depends on:
+
+git clone https://github.com/alexspitalas/T-gremlin.git
+cd T-gremlin
+git checkout TemporalGremlin
+mvn clean install -DskipTests
+
+This builds and installs the Temporal TinkerPop Gremlin artifacts to your local Maven repository.
+
+##### 2. Clone and Build Temporal JanusGraph
+
+Next, clone and build the Temporal JanusGraph repository:
+
+git clone https://github.com/alexspitalas/T-janusgraph.git
+cd T-janusgraph
+git checkout TemporalJanusGraph
+mvn clean install -DskipTests
+
+This compiles Temporal JanusGraph and makes it available for use in your projects.
+
+
+##### 3. Configure Your Project
+
+In your project's `pom.xml`, add the Temporal JanusGraph dependency:
+
+<dependency>
+    <groupId>org.janusgraph</groupId>
+    <artifactId>janusgraph-core</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
+</dependency>
+
+#### Basic Usage
+
+Once installed, you can use it same way as Janusgraph, including the temporal functions described in temporal tinkerpop and the temporal partitioning strategy.
+
+
 ## Visualization
 
 JanusGraph has a web-based graph visualizer located in [janusgraph-visualizer](https://github.com/JanusGraph/janusgraph-visualizer) 
